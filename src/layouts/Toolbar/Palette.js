@@ -6,7 +6,6 @@ const PaletteContainer = styled.div`
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 5px;
   width: 120px;
-  margin-left: 10px;
 `;
 
 const ColorSelect = styled.div`
@@ -32,7 +31,11 @@ export default function Palette({ color, setColor }) {
   return (
     <PaletteContainer>
       {colourRange.map((colour) => (
-        <ColorSelect color={colour} onClick={() => setColor(colour)} />
+        <ColorSelect
+          selectedColor={color}
+          color={colour}
+          onClick={() => setColor(colour)}
+        />
       ))}
     </PaletteContainer>
   );

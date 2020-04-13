@@ -17,7 +17,12 @@ function App() {
       <br />
       <span>{mode}</span>
       <ComponentContainer>
-        <Toolbar setColor={setColor} color={color} />
+        <Toolbar
+          setColor={setColor}
+          color={color}
+          mode={mode}
+          setMode={setMode}
+        />
         <Canvas />
       </ComponentContainer>
     </div>
