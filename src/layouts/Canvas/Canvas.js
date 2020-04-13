@@ -9,8 +9,8 @@ const CanvasContainer = styled.div`
 const CanvasEl = styled.canvas`
   background: white;
   border: 1px dashed white;
-  width: 300px;
-  height: 300px;
+  // width: 100%;
+  // height: 100%;
   border-radius: 3px;
 `;
 
@@ -51,6 +51,7 @@ export default function Canvas({ color, mode }) {
 
   const drawLine = () => {
     ctx.save();
+    // TODO: Persist pervious shapes fn
     ctx.clearRect(0, 0, 1000, 1000);
     ctx.beginPath();
     ctx.strokeStyle = color;
@@ -58,6 +59,19 @@ export default function Canvas({ color, mode }) {
     ctx.moveTo(initialX, initialY);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
+    ctx.restore();
+  };
+
+  const drawRectangle = () => {
+    const width = currentX - initialX;
+    const height = currentY - initialY;
+
+    ctx.save();
+    // TODO: Persist pervious shapes fn
+    ctx.clearRect(0, 0, 1000, 1000);
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1;
+    ctx.fillRect(initialX, initialY, width, height);
     ctx.restore();
   };
 
@@ -81,6 +95,9 @@ export default function Canvas({ color, mode }) {
         case "line":
           drawLine();
           break;
+        case "rectangle":
+          drawRectangle();
+          break;
         default:
           break;
       }
@@ -99,6 +116,8 @@ export default function Canvas({ color, mode }) {
   return (
     <CanvasContainer>
       <CanvasEl
+        width="1000"
+        height="600"
         id="canvas"
         ref={canvasRef}
         onMouseDown={(e) => mouseDown(e)}

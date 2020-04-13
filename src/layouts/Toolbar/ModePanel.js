@@ -19,7 +19,7 @@ const ModeSelect = styled.div`
 `;
 
 export default function ModePanel({ mode, setMode }) {
-  const modes = ["freehand", "line", "box"];
+  const modes = ["freehand", "line", "rectangle"];
 
   return (
     <ModeContainer>
