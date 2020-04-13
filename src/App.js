@@ -4,7 +4,11 @@ import styled from "styled-components";
 import Canvas from "./layouts/Canvas/Canvas";
 import Toolbar from "./layouts/Toolbar/Toolbar";
 
-const ComponentContainer = styled.div``;
+const ComponentContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: 80vh%;
+`;
 
 function App() {
   const [color, setColor] = useState("black");
