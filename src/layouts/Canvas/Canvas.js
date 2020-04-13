@@ -17,6 +17,7 @@ const CanvasEl = styled.canvas`
 export default function Canvas({ color, mode }) {
   const [ctx, setCtx] = useState(null);
   const [drawing, setDrawing] = useState(false);
+  const [shapes, setShapes] = useState([]);
   const [topOffset, setTopOffset] = useState(0);
   const [leftOffset, setLeftOffset] = useState(0);
   const [initialX, setInitialX] = useState(0);
@@ -35,6 +36,40 @@ export default function Canvas({ color, mode }) {
 
   const offsetX = (x) => x - leftOffset;
   const offsetY = (y) => y - topOffset;
+
+  const saveShape = (shapeInfo) => {
+    const { type, sizeInfo } = shapeInfo;
+
+    let shape = [];
+
+    switch (type) {
+      case "rectangle":
+        const { x, y, width, height } = sizeInfo;
+        shape.push({ type, sizeInfo: { color, x, y, width, height } });
+        break;
+      default:
+        break;
+    }
+
+    setShapes([...shapes, shape]);
+  };
+
+  const saveRectangle = () => {
+    const width = currentX - initialX;
+    const height = currentY - initialY;
+
+    const rectangle = {
+      type: "rectangle",
+      sizeInfo: {
+        x: initialX,
+        y: initialY,
+        width,
+        height,
+      },
+    };
+
+    saveShape(rectangle);
+  };
 
   const drawFreeHand = () => {
     ctx.save();
@@ -106,6 +141,23 @@ export default function Canvas({ color, mode }) {
   };
 
   const mouseUp = (e) => {
+    if (drawing) {
+      switch (mode) {
+        // case "freehand":
+        //   drawFreeHand();
+        //   break;
+        // case "line":
+        //   drawLine();
+        //   break;
+        case "rectangle":
+          saveRectangle();
+          break;
+        default:
+          break;
+      }
+      return;
+    }
+
     setDrawing(false);
   };
 
