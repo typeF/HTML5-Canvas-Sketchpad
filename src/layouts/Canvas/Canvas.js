@@ -49,6 +49,18 @@ export default function Canvas({ color, mode }) {
     ctx.restore();
   };
 
+  const drawLine = () => {
+    ctx.save();
+    ctx.clearRect(0, 0, 1000, 1000);
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.moveTo(initialX, initialY);
+    ctx.lineTo(currentX, currentY);
+    ctx.stroke();
+    ctx.restore();
+  };
+
   const mouseDown = (e) => {
     const { clientX, clientY } = e;
     setInitialX(offsetX(clientX));
@@ -64,8 +76,10 @@ export default function Canvas({ color, mode }) {
     if (drawing) {
       switch (mode) {
         case "freehand":
-          console.log("freehand");
           drawFreeHand();
+          break;
+        case "line":
+          drawLine();
           break;
         default:
           break;
