@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 
 const PaletteContainer = styled.div`
@@ -32,6 +32,7 @@ export default function Palette({ color, setColor }) {
     <PaletteContainer>
       {colourRange.map((colour) => (
         <ColorSelect
+          key={colour}
           selectedColor={color}
           color={colour}
           onClick={() => setColor(colour)}

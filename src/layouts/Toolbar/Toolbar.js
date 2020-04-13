@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import ModePanel from "./ModePanel";
 import Palette from "./Palette";

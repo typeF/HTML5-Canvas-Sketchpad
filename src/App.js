@@ -7,12 +7,14 @@ import Toolbar from "./layouts/Toolbar/Toolbar";
 const ComponentContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  height: 80vh%;
+  align-items: center;
+  height: 80vh;
+  width: 80vw;
 `;
 
 function App() {
   const [color, setColor] = useState("black");
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState("freehand");
 
   return (
     <div className="App">
@@ -27,7 +29,7 @@ function App() {
           mode={mode}
           setMode={setMode}
         />
-        <Canvas />
+        <Canvas mode={mode} color={color} />
       </ComponentContainer>
     </div>
   );

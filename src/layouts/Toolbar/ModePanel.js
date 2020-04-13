@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 
 const ModeContainer = styled.div`
@@ -9,7 +9,8 @@ const ModeContainer = styled.div`
 `;
 
 const ModeSelect = styled.div`
-  border: 1px solid black;
+  color: white;
+  border: 1px solid white;
   height: 20px;
   width: 80px;
   cursor: pointer;
@@ -23,7 +24,9 @@ export default function ModePanel({ mode, setMode }) {
   return (
     <ModeContainer>
       {modes.map((mode) => (
-        <ModeSelect onClick={() => setMode(mode)}>{mode}</ModeSelect>
+        <ModeSelect key={mode} onClick={() => setMode(mode)}>
+          {mode}
+        </ModeSelect>
       ))}
     </ModeContainer>
   );
