@@ -1,24 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import styled from "styled-components";
+import Canvas from "./layouts/Canvas/Canvas";
+import Toolbar from "./layouts/Toolbar/Toolbar";
+
+const ComponentContainer = styled.div``;
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <header className="App-header">HTML5 Canvas Sketchpad</header>
+      <ComponentContainer>
+        <Toolbar />
+        <Canvas />
+      </ComponentContainer>
     </div>
   );
 }
