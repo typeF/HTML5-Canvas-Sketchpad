@@ -37,20 +37,7 @@ export default function Canvas({ color, mode }) {
   const offsetX = (x) => x - leftOffset;
   const offsetY = (y) => y - topOffset;
 
-  const saveShape = (shapeInfo) => {
-    const { type, sizeInfo } = shapeInfo;
-
-    let shape = [];
-
-    switch (type) {
-      case "rectangle":
-        const { x, y, width, height } = sizeInfo;
-        shape.push({ type, sizeInfo: { color, x, y, width, height } });
-        break;
-      default:
-        break;
-    }
-
+  const saveShape = (shape) => {
     setShapes([...shapes, shape]);
   };
 
@@ -59,8 +46,11 @@ export default function Canvas({ color, mode }) {
     const height = currentY - initialY;
 
     const rectangle = {
+      // TODO: Replace with more robust id
+      id: Math.floor(Math.random() * 1000),
       type: "rectangle",
-      sizeInfo: {
+      dimensions: {
+        color,
         x: initialX,
         y: initialY,
         width,
@@ -97,16 +87,29 @@ export default function Canvas({ color, mode }) {
     ctx.restore();
   };
 
-  const drawRectangle = () => {
+  const draftRectangle = () => {
     const width = currentX - initialX;
     const height = currentY - initialY;
 
-    ctx.save();
     // TODO: Persist pervious shapes fn
     ctx.clearRect(0, 0, 1000, 1000);
+    const dimensions = {
+      color,
+      x: initialX,
+      y: initialY,
+      width,
+      height,
+    };
+    drawRectangle(dimensions);
+  };
+
+  const drawRectangle = (dimensions) => {
+    const { color, x, y, width, height } = dimensions;
+    ctx.save();
+    // TODO: Persist pervious shapes fn
     ctx.fillStyle = color;
     ctx.lineWidth = 1;
-    ctx.fillRect(initialX, initialY, width, height);
+    ctx.fillRect(x, y, width, height);
     ctx.restore();
   };
 
@@ -131,7 +134,7 @@ export default function Canvas({ color, mode }) {
           drawLine();
           break;
         case "rectangle":
-          drawRectangle();
+          draftRectangle();
           break;
         default:
           break;
@@ -155,7 +158,6 @@ export default function Canvas({ color, mode }) {
         default:
           break;
       }
-      return;
     }
 
     setDrawing(false);
