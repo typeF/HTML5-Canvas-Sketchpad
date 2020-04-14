@@ -24,7 +24,7 @@ export default function Canvas({ color, mode }) {
   const [initialY, setInitialY] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [currentY, setCurrentY] = useState(0);
-  const [freehandPoints, setFreehandPoints] = useState([]);
+  const [freeHandPoints, setFreeHandPoints] = useState([]);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -86,64 +86,42 @@ export default function Canvas({ color, mode }) {
       type: "freehand",
       dimensions: {
         color,
-        freehandPoints,
+        freeHandPoints,
       },
     };
 
     saveShape(freehand);
   };
 
-  const drawFreeHand = () => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    ctx.moveTo(initialX, initialY);
-    ctx.lineTo(currentX, currentY);
-    ctx.stroke();
-    ctx.restore();
-
+  const draftFreeHand = () => {
     const point = [
       [initialX, initialY],
       [currentX, currentY],
     ];
-    setFreehandPoints([...freehandPoints, point]);
+
+    const dimensions = {
+      color,
+      freeHandPoints: [point],
+    };
+
+    drawFreeHand(dimensions);
+
+    setFreeHandPoints([...freeHandPoints, point]);
 
     setInitialX(currentX);
     setInitialY(currentY);
   };
 
-  const draftLine = () => {
-    ctx.clearRect(0, 0, 1000, 1000);
-    drawExistingShapes();
-
-    const dimensions = {
-      freehandPoints: [
-        [initialX, initialY],
-        [currentX, currentY],
-      ],
-      color,
-      // x1: initialX,
-      // y1: initialY,
-      // x2: currentX,
-      // y2: currentY,
-    };
-
-    drawLine(dimensions);
-  };
-
-  const drawLine = (dimensions) => {
-    const { color, freehandPoints } = dimensions;
+  const drawFreeHand = (dimensions) => {
+    const { color, freeHandPoints } = dimensions;
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
 
-    freehandPoints.forEach((freehandPoint) => {
-      const [start, end] = freehandPoint;
+    freeHandPoints.forEach((freeHandPoint) => {
+      const [start, end] = freeHandPoint;
       const [x1, y1] = start;
       const [x2, y2] = end;
-      // const x1 = freehandPoint[0][0];
-      // const x1 = freehandPoint[0][0];
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
@@ -153,10 +131,40 @@ export default function Canvas({ color, mode }) {
     ctx.restore();
   };
 
+  const draftLine = () => {
+    ctx.clearRect(0, 0, 1000, 1000);
+    drawExistingShapes();
+
+    const dimensions = {
+      color,
+      x1: initialX,
+      y1: initialY,
+      x2: currentX,
+      y2: currentY,
+    };
+
+    drawLine(dimensions);
+  };
+
+  const drawLine = (dimenions) => {
+    const { color, x1, y1, x2, y2 } = dimenions;
+    ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.restore();
+  };
+
   const drawExistingShapes = () => {
     shapes.forEach((shape) => {
       const { type, dimensions } = shape;
       switch (type) {
+        case "freehand":
+          drawFreeHand(dimensions);
+          break;
         case "line":
           drawLine(dimensions);
           break;
@@ -204,7 +212,7 @@ export default function Canvas({ color, mode }) {
 
     switch (mode) {
       case "freehand":
-        setFreehandPoints([]);
+        setFreeHandPoints([]);
         break;
       default:
         break;
@@ -219,7 +227,7 @@ export default function Canvas({ color, mode }) {
     if (drawing) {
       switch (mode) {
         case "freehand":
-          drawFreeHand();
+          draftFreeHand();
           break;
         case "line":
           draftLine();
