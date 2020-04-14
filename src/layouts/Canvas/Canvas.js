@@ -12,6 +12,23 @@ const CanvasEl = styled.canvas`
   // width: 100%;
   // height: 100%;
   border-radius: 3px;
+  box-shadow: 0 0.75rem 2rem 0 rgba(0, 0, 0, 0.2);
+`;
+
+const CanvasButton = styled.div`
+  padding: 1rem;
+  vertical-align: middle;
+  border-radius: 2px;
+  height: 20px;
+  width: 60px;
+  cursor: pointer;
+  background: white;
+  margin: 20px 15px 20px 0px;
+  box-shadow: 0 0.75rem 2rem 0 rgba(0, 0, 0, 0.2);
+`;
+
+const CanvasButtonsDiv = styled.div`
+  display: flex;
 `;
 
 export default function Canvas({ color, mode }) {
@@ -132,7 +149,6 @@ export default function Canvas({ color, mode }) {
   };
 
   const draftLine = () => {
-    ctx.clearRect(0, 0, 1000, 1000);
     drawExistingShapes();
 
     const dimensions = {
@@ -159,6 +175,7 @@ export default function Canvas({ color, mode }) {
   };
 
   const drawExistingShapes = () => {
+    ctx.clearRect(0, 0, 1000, 1000);
     shapes.forEach((shape) => {
       const { type, dimensions } = shape;
       switch (type) {
@@ -181,7 +198,6 @@ export default function Canvas({ color, mode }) {
     const width = currentX - initialX;
     const height = currentY - initialY;
 
-    ctx.clearRect(0, 0, 1000, 1000);
     drawExistingShapes();
 
     const dimensions = {
@@ -281,6 +297,17 @@ export default function Canvas({ color, mode }) {
     setDrawing(false);
   };
 
+  const save = () => {
+    localStorage.setItem("canvasData", JSON.stringify(shapes));
+  };
+
+  const restore = () => {
+    // Little buggy, have to press twice to restore
+    const storedData = JSON.parse(localStorage.getItem("canvasData"));
+    setShapes(storedData);
+    drawExistingShapes();
+  };
+
   return (
     <CanvasContainer>
       <CanvasEl
@@ -295,6 +322,12 @@ export default function Canvas({ color, mode }) {
       >
         Canvas
       </CanvasEl>
+      <CanvasButtonsDiv>
+        <CanvasButton onClick={() => save()}>Save</CanvasButton>
+        <CanvasButton onClick={() => restore()}>
+          Restore (Press twice)
+        </CanvasButton>
+      </CanvasButtonsDiv>
     </CanvasContainer>
   );
 }
