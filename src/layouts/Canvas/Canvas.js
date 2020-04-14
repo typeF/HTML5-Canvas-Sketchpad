@@ -61,6 +61,23 @@ export default function Canvas({ color, mode }) {
     saveShape(rectangle);
   };
 
+  const saveLine = () => {
+    const line = {
+      // TODO: Replace with more robust id
+      id: Math.floor(Math.random() * 1000),
+      type: "line",
+      dimensions: {
+        color,
+        x1: initialX,
+        y1: initialY,
+        x2: currentX,
+        y2: currentY,
+      },
+    };
+
+    saveShape(line);
+  };
+
   const drawFreeHand = () => {
     ctx.save();
     ctx.beginPath();
@@ -74,15 +91,29 @@ export default function Canvas({ color, mode }) {
     ctx.restore();
   };
 
-  const drawLine = () => {
-    ctx.save();
-    // TODO: Persist pervious shapes fn
+  const draftLine = () => {
     ctx.clearRect(0, 0, 1000, 1000);
+    drawExistingShapes();
+
+    const dimensions = {
+      color,
+      x1: initialX,
+      y1: initialY,
+      x2: currentX,
+      y2: currentY,
+    };
+
+    drawLine(dimensions);
+  };
+
+  const drawLine = (dimenions) => {
+    const { color, x1, y1, x2, y2 } = dimenions;
+    ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
-    ctx.moveTo(initialX, initialY);
-    ctx.lineTo(currentX, currentY);
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
     ctx.stroke();
     ctx.restore();
   };
@@ -91,6 +122,9 @@ export default function Canvas({ color, mode }) {
     shapes.forEach((shape) => {
       const { type, dimensions } = shape;
       switch (type) {
+        case "line":
+          drawLine(dimensions);
+          break;
         case "rectangle":
           drawRectangle(dimensions);
           break;
@@ -104,7 +138,6 @@ export default function Canvas({ color, mode }) {
     const width = currentX - initialX;
     const height = currentY - initialY;
 
-    // TODO: Persist pervious shapes fn
     ctx.clearRect(0, 0, 1000, 1000);
     drawExistingShapes();
 
@@ -122,7 +155,6 @@ export default function Canvas({ color, mode }) {
   const drawRectangle = (dimensions) => {
     const { color, x, y, width, height } = dimensions;
     ctx.save();
-    // TODO: Persist pervious shapes fn
     ctx.fillStyle = color;
     ctx.lineWidth = 1;
     ctx.fillRect(x, y, width, height);
@@ -147,7 +179,7 @@ export default function Canvas({ color, mode }) {
           drawFreeHand();
           break;
         case "line":
-          drawLine();
+          draftLine();
           break;
         case "rectangle":
           draftRectangle();
@@ -165,9 +197,9 @@ export default function Canvas({ color, mode }) {
         // case "freehand":
         //   drawFreeHand();
         //   break;
-        // case "line":
-        //   drawLine();
-        //   break;
+        case "line":
+          saveLine();
+          break;
         case "rectangle":
           saveRectangle();
           break;
