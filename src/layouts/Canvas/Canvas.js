@@ -24,6 +24,7 @@ export default function Canvas({ color, mode }) {
   const [initialY, setInitialY] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [currentY, setCurrentY] = useState(0);
+  const [freehandPoints, setFreehandPoints] = useState([]);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -78,6 +79,20 @@ export default function Canvas({ color, mode }) {
     saveShape(line);
   };
 
+  const saveFreehand = () => {
+    const freehand = {
+      // TODO: Replace with more robust id
+      id: Math.floor(Math.random() * 1000),
+      type: "freehand",
+      dimensions: {
+        color,
+        freehandPoints,
+      },
+    };
+
+    saveShape(freehand);
+  };
+
   const drawFreeHand = () => {
     ctx.save();
     ctx.beginPath();
@@ -86,9 +101,16 @@ export default function Canvas({ color, mode }) {
     ctx.moveTo(initialX, initialY);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
+    ctx.restore();
+
+    const point = [
+      [initialX, initialY],
+      [currentX, currentY],
+    ];
+    setFreehandPoints([...freehandPoints, point]);
+
     setInitialX(currentX);
     setInitialY(currentY);
-    ctx.restore();
   };
 
   const draftLine = () => {
@@ -96,25 +118,38 @@ export default function Canvas({ color, mode }) {
     drawExistingShapes();
 
     const dimensions = {
+      freehandPoints: [
+        [initialX, initialY],
+        [currentX, currentY],
+      ],
       color,
-      x1: initialX,
-      y1: initialY,
-      x2: currentX,
-      y2: currentY,
+      // x1: initialX,
+      // y1: initialY,
+      // x2: currentX,
+      // y2: currentY,
     };
 
     drawLine(dimensions);
   };
 
-  const drawLine = (dimenions) => {
-    const { color, x1, y1, x2, y2 } = dimenions;
+  const drawLine = (dimensions) => {
+    const { color, freehandPoints } = dimensions;
     ctx.save();
-    ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
+
+    freehandPoints.forEach((freehandPoint) => {
+      const [start, end] = freehandPoint;
+      const [x1, y1] = start;
+      const [x2, y2] = end;
+      // const x1 = freehandPoint[0][0];
+      // const x1 = freehandPoint[0][0];
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    });
+
     ctx.restore();
   };
 
@@ -166,6 +201,14 @@ export default function Canvas({ color, mode }) {
     setInitialX(offsetX(clientX));
     setInitialY(offsetY(clientY));
     setDrawing(true);
+
+    switch (mode) {
+      case "freehand":
+        setFreehandPoints([]);
+        break;
+      default:
+        break;
+    }
   };
 
   const mouseMove = (e) => {
@@ -194,9 +237,9 @@ export default function Canvas({ color, mode }) {
   const mouseUp = (e) => {
     if (drawing) {
       switch (mode) {
-        // case "freehand":
-        //   drawFreeHand();
-        //   break;
+        case "freehand":
+          saveFreehand();
+          break;
         case "line":
           saveLine();
           break;
@@ -212,6 +255,21 @@ export default function Canvas({ color, mode }) {
   };
 
   const mouseLeave = (e) => {
+    if (drawing) {
+      switch (mode) {
+        case "freehand":
+          saveFreehand();
+          break;
+        case "line":
+          saveLine();
+          break;
+        case "rectangle":
+          saveRectangle();
+          break;
+        default:
+          break;
+      }
+    }
     setDrawing(false);
   };
 
