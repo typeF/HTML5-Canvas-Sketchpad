@@ -19,9 +19,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">HTML5 Canvas Sketchpad</header>
-      <span>{color}</span>
       <br />
-      <span>{mode}</span>
       <ComponentContainer>
         <Toolbar
           setColor={setColor}

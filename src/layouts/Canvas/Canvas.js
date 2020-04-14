@@ -41,6 +41,7 @@ export default function Canvas({ color, mode }) {
   const [currentY, setCurrentY] = useState(0);
   const [freeHandPoints, setFreeHandPoints] = useState([]);
   const [matrix, setMatrix] = useState([]);
+  const [selectedShape, setSelectedShape] = useState([]);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -75,6 +76,41 @@ export default function Canvas({ color, mode }) {
       default:
         break;
     }
+  };
+
+  const selectShape = () => {
+    const x = Math.floor(currentX);
+    const y = Math.floor(currentY);
+    const shapeId = matrix[y][x];
+    if (!shapeId) {
+      return;
+    }
+
+    const matchingShape = shapes.find((shape) => shape.id === shapeId);
+
+    if (matchingShape) {
+      const shapeIndex = shapes.findIndex((shape) => shape.id === shapeId);
+      const newShapesArray = Array.from(shapes);
+      newShapesArray.splice(shapeIndex, 1);
+      setShapes(newShapesArray);
+      setSelectedShape(matchingShape);
+    }
+  };
+
+  const moveRectangle = () => {
+    const { dimensions } = selectedShape;
+    const { color, width, height } = dimensions;
+
+    drawExistingShapes();
+
+    const movingRectangleDimensions = {
+      color,
+      x: currentX,
+      y: currentY,
+      width,
+      height,
+    };
+    drawRectangle(movingRectangleDimensions);
   };
 
   const addRectangleToMatrix = (shape) => {
@@ -266,6 +302,9 @@ export default function Canvas({ color, mode }) {
       case "freehand":
         setFreeHandPoints([]);
         break;
+      case "move":
+        selectShape(clientX, clientY);
+        break;
       default:
         break;
     }
@@ -287,6 +326,9 @@ export default function Canvas({ color, mode }) {
         case "rectangle":
           draftRectangle();
           break;
+        case "move":
+          moveRectangle();
+          break;
         default:
           break;
       }
@@ -304,6 +346,9 @@ export default function Canvas({ color, mode }) {
           saveLine();
           break;
         case "rectangle":
+          saveRectangle();
+          break;
+        case "move":
           saveRectangle();
           break;
         default:
@@ -324,6 +369,9 @@ export default function Canvas({ color, mode }) {
           saveLine();
           break;
         case "rectangle":
+          saveRectangle();
+          break;
+        case "move":
           saveRectangle();
           break;
         default:

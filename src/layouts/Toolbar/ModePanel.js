@@ -10,16 +10,17 @@ const ModeContainer = styled.div`
 
 const ModeSelect = styled.div`
   color: white;
+  padding: 0.2rem;
   border: 1px solid white;
-  height: 20px;
-  width: 80px;
+  height: 30px;
+  width: 100px;
   cursor: pointer;
   border-radius: 3px;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 `;
 
 export default function ModePanel({ mode, setMode }) {
-  const modes = ["freehand", "line", "rectangle"];
+  const modes = ["freehand", "line", "rectangle", "move"];
 
   return (
     <ModeContainer>
