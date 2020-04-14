@@ -9,8 +9,6 @@ const CanvasContainer = styled.div`
 const CanvasEl = styled.canvas`
   background: white;
   border: 1px dashed white;
-  // width: 100%;
-  // height: 100%;
   border-radius: 3px;
   box-shadow: 0 0.75rem 2rem 0 rgba(0, 0, 0, 0.2);
 `;
@@ -42,6 +40,7 @@ export default function Canvas({ color, mode }) {
   const [currentX, setCurrentX] = useState(0);
   const [currentY, setCurrentY] = useState(0);
   const [freeHandPoints, setFreeHandPoints] = useState([]);
+  const [matrix, setMatrix] = useState([]);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -50,13 +49,50 @@ export default function Canvas({ color, mode }) {
     setLeftOffset(canvas.getBoundingClientRect().left);
     setTopOffset(canvas.getBoundingClientRect().top);
     setCtx(context);
+    setMatrix(getMatrixGrid);
   }, [canvasRef]);
+
+  const getMatrixGrid = () => {
+    return Array(600)
+      .fill(null)
+      .map((row) => Array(1000).fill(null));
+  };
 
   const offsetX = (x) => x - leftOffset;
   const offsetY = (y) => y - topOffset;
 
   const saveShape = (shape) => {
     setShapes([...shapes, shape]);
+    addShapeToMatrix(shape);
+  };
+
+  const addShapeToMatrix = (shape) => {
+    const { type } = shape;
+    switch (type) {
+      case "rectangle":
+        addRectangleToMatrix(shape);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const addRectangleToMatrix = (shape) => {
+    const { id, dimensions } = shape;
+    const { x, y, width, height } = dimensions;
+    const draftMatrix = Array.from(matrix);
+    const rangeXStart = Math.floor(x);
+    const rangeXEnd = Math.floor(x + width);
+    const rangeYStart = Math.floor(y);
+    const rangeYEnd = Math.floor(y + height);
+
+    for (let i = rangeYStart; i < rangeYEnd; i++) {
+      for (let j = rangeXStart; j < rangeXEnd; j++) {
+        draftMatrix[i][j] = id;
+      }
+    }
+
+    setMatrix(draftMatrix);
   };
 
   const saveRectangle = () => {
