@@ -87,12 +87,27 @@ export default function Canvas({ color, mode }) {
     ctx.restore();
   };
 
+  const drawExistingShapes = () => {
+    shapes.forEach((shape) => {
+      const { type, dimensions } = shape;
+      switch (type) {
+        case "rectangle":
+          drawRectangle(dimensions);
+          break;
+        default:
+          break;
+      }
+    });
+  };
+
   const draftRectangle = () => {
     const width = currentX - initialX;
     const height = currentY - initialY;
 
     // TODO: Persist pervious shapes fn
     ctx.clearRect(0, 0, 1000, 1000);
+    drawExistingShapes();
+
     const dimensions = {
       color,
       x: initialX,
@@ -100,6 +115,7 @@ export default function Canvas({ color, mode }) {
       width,
       height,
     };
+
     drawRectangle(dimensions);
   };
 
